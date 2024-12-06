@@ -7,61 +7,66 @@ import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class KidService {
-  constructor(private db:PrismaService=db){}
-  
+  constructor(private db: PrismaService = db) { }
+
 
   create(createKidDto: CreateKidDto) {
-    return this.db.kid.create({data:createKidDto});
+    return this.db.kid.create({ data: createKidDto });
   }
 
   findAll() {
     return this.db.kid.findMany();
   }
 
- async findOne(id: number) {
-  try
-    {
+  async findOne(id: number) {
+    try {
 
-      return await this.db.kid.findUniqueOrThrow({where:{id}});
+      return await this.db.kid.findUniqueOrThrow({ where: { id } });
     }
-    catch(e){
+    catch (e) {
       throw new NotFoundException("id not found");
+    }
   }
-}
 
   async update(id: number, updateKidDto: UpdateKidDto) {
-    try{
-      return await this.db.kid.update({where:{id},data:updateKidDto});
+    try {
+      return await this.db.kid.update({ where: { id }, data: updateKidDto });
     }
-    catch(e){
+    catch (e) {
       throw new NotFoundException("id not found");
+    }
   }
-}
 
- async remove(id: number) {
-    try{
-       return await this.db.kid.delete({where:{id}});
+  async remove(id: number) {
+    try {
+      return await this.db.kid.delete({ where: { id } });
 
-    } catch(e){
+    } catch (e) {
       throw new NotFoundException("id not found");
+    }
   }
-}
- async addToyToKid(kidId:number,toyId:number){
-  try{
-    return await this.db.kid.update({where:{id:kidId},data:{toys:{connect:{id:toyId}}}});
-  }
-  catch(e){
-    throw new NotFoundException("id not found");
-  }
-}
+  async addToyToKid(kidId: number, toyId: number) {
+    const kid = await this.db.kid.findUnique({ where: { id: kidId } });
+    const toy = await this.db.toy.findUnique({ where: { id: toyId } });
+    if (!kid || !toy) {
+      throw new NotFoundException("id not found");
+    }
+    else {
+      return await this.db.kid.update({ where: { id: kidId }, data: { toys: { connect: { id: toyId } } } });
 
- async removeToyFromKid(kidId:number,toyId:number){
-  try{
-    return this.db.kid.update({where:{id:kidId},data:{toys:{disconnect:{id:toyId}}}});
+    }
   }
-  catch(e){
-    throw new NotFoundException("id not found");
+
+  async removeToyFromKid(kidId: number, toyId: number) {
+    const kid = await this.db.kid.findUnique({ where: { id: kidId } });
+    const toy = await this.db.toy.findUnique({ where: { id: toyId } });
+    if (!kid || !toy) {
+      throw new NotFoundException("id not found");
+    }
+    else {
+      return this.db.kid.update({ where: { id: kidId }, data: { toys: { disconnect: { id: toyId } } } });
+
+    }
   }
- }
 
 }

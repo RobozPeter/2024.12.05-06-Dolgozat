@@ -42,21 +42,25 @@ export class ToyService {
   }
  }
  async addKidtoToy(toyId:number,kidId:number){
-  try{
-    return await this.db.toy.update({where:{id:toyId},data:{Kids:{connect:{id:kidId}}}});
-  }
-  catch(e){
+  const kid = await this.db.kid.findUnique({where:{id:kidId}});
+  const toy = await this.db.toy.findUnique({where:{id:toyId}});
+  if(!kid || !toy){
     throw new NotFoundException("id not found");
+  }
+  else{
+    return await this.db.toy.update({where:{id:toyId},data:{Kids:{connect:{id:kidId}}}});
   }
 }
 
  async removeKidFromToy(toyId:number,kidId:number){
-  try{
-    return await this.db.toy.update({where:{id:toyId},data:{Kids:{disconnect:{id:kidId}}}});
-  } 
-  catch(e){
+  const kid = await this.db.kid.findUnique({where:{id:kidId}});
+  const toy = await this.db.toy.findUnique({where:{id:toyId}});
+  if(!kid || !toy){
     throw new NotFoundException("id not found");
+    }
+  else{
+    return await this.db.toy.update({where:{id:toyId},data:{Kids:{disconnect:{id:kidId}}}});
+    } 
   }
 }
 
-}

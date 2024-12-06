@@ -31,11 +31,11 @@ export class ToyController {
   remove(@Param('id') id: string) {
     return this.toyService.remove(+id);
   }
-  @Put(':toyId/kids/:kidId')
+  @Put(':toyId/children/:kidId')
   addKidToToy(@Param('toyId') toyId: string, @Param('kidId') kidId: string) {
     return this.toyService.addKidtoToy(+toyId, +kidId);
   }
-  @Delete(':toyId/kids/:kidId')
+  @Delete(':toyId/children/:kidId')
   removeKidFromToy(@Param('toyId') toyId: string, @Param('kidId') kidId: string) {
     return this.toyService.removeKidFromToy(+toyId, +kidId);
   }
